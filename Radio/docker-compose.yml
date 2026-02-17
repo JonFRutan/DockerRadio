@@ -1,0 +1,28 @@
+services:
+  icecast:
+    image: ${ICECAST_IMAGE}
+    container_name: icecast
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./icecast.xml:/etc/icecast.xml:ro
+    networks:
+      - radio_net
+
+  liquidsoap:
+    image: ${LIQUIDSOAP_IMAGE}
+    container_name: liquidsoap
+    restart: unless-stopped
+    depends_on:
+      - icecast
+    volumes:
+      - ./radio.liq:/etc/liquidsoap/radio.liq
+      - ./Playlists:/music:ro
+    command: ["liquidsoap", "/etc/liquidsoap/radio.liq"]
+    networks:
+      - radio_net
+
+networks:
+  radio_net:
+    driver: bridge
