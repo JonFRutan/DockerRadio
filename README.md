@@ -63,11 +63,32 @@ Navigate into the `Radio` folder with the following command:
 cd Radio
 ```
 If you type `ls` you'll see:
+- `Playlists` - This directory is where our radio station playlists will go. Each station will have it's own subfolder here for you to fill up with music.
 - `docker-compose.yml` - This is a **Docker Compose** file. For an analogy - A music note is to a musical composition what a Docker container is to a Docker Compose. This file structures all the necessary containers in order to achieve our goal.
 - `icecast.xml` - This is some boilerplate info to configure our icecast server. You can ignore this.
 - `Makefile` - This is a wrapper tool I've made to help you expedite the station setting up process. If you type and run `make` you'll get a list of commands you can run from it.
 
+Run the following commands:
+1. `make init` - This will pull some system info (Your OS and CPU architecture) to find the appropriate docker images and commands. This will be output and held in a `.env` file.
+2. `make up` - This will initialize and create the two docker containers: one for **liquidsoap** and ne for **Icecast**.
+3. `make station` - This will create a new radio station. You'll be prompted to enter a name for it. Running this will create a new folder under `Playlists`.
 
+After you run these three commands, find the playlist folder for the new station like so (we'll assume we created a station "LUG"):
+```
+cd Playlists/LUG
+```
+This folder will be empty. I've provided some sample music for you to put in it to try it out though. Run the following command:
+```
+cp ../../../Sample/* .
+```
+Forgive the ugly command! Since the sample directory is all the way back up at the root we just need to tell the copy command where to look to find all the music. Once you've run this, run the following:
+```
+docker compose restart liquidsoap
+```
+This will restart the **liquidsoap** container, so it can see the newly added music. Now open up `Website/radio.html` with a browser of your choice. You can also do this through the command line:
+```
+
+```
 
 --------------
 
