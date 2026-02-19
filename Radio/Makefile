@@ -29,6 +29,8 @@ ICE_IMG := libretime/icecast:latest
 LIQ_IMG := savonet/liquidsoap:v2.3.0
 PLATFORM_MSG := "AMD64 Setup"
 endif
+#docker compose command detector. Used for differentiating docker v1 vs v2
+DOCKER_COMP := $(shell docker compose version >/dev/null 2>&1 && echo "docker compose" || echo "docker-compose")
 
 .PHONY: all help init station up down clean
 
@@ -67,18 +69,18 @@ station: init
 	echo "$$name = mksafe($$name)" >> $(CONFIG_FILE); \
 	echo "output.icecast(%mp3, host=\"icecast\", port=8000, password=\"$(ICECAST_PASS)\", mount=\"/$$name\", name=\"$$name-FM\", $$name)" >> $(CONFIG_FILE); \
 	echo "Station '$$name' created."; \
-	echo "		1. Put your MP3s in: $(PLAYLIST_DIR)/$$name"; \
+	echo "		1. Put your audio files in: $(PLAYLIST_DIR)/$$name"; \
 	echo "		2. Run 'make up' to start broadcasting."
 
 up: init
-	docker compose up -d
+	$(DOCKER_COMP) up -d
 	@echo "Waiting for services..."
 	@sleep 5
 
 down:
-	docker compose down
+	$(DOCKER_COMP) down
 
 clean:
-	docker compose down
+	$(DOCKER_COMP) down
 	rm -f $(CONFIG_FILE) $(ENV_FILE)
-	@echo "    Config cleaned. Playlist MP3s were kept safe."
+	@echo "    Config cleaned. Playlist audio files were kept safe."
