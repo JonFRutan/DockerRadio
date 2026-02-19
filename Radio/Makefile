@@ -84,3 +84,23 @@ clean:
 	$(DOCKER_COMP) down
 	rm -f $(CONFIG_FILE) $(ENV_FILE)
 	@echo "    Config cleaned. Playlist audio files were kept safe."
+
+#for image demo
+image:
+	@echo "Creating a temporary Dockerfile..."
+	@echo "FROM python:3.11-slim" > Dockerfile.demo
+	@echo "RUN apt-get update && apt-get install -y wget" >> Dockerfile.demo
+	@echo "WORKDIR /app" >> Dockerfile.demo
+	@echo "ENV DEMO_VAR=\"Hello LUG\"" >> Dockerfile.demo
+	@echo "CMD [\"python3\"]" >> Dockerfile.demo
+	@echo "Building the image (watch the layers generate)..."
+	docker build -t lug-layer-demo -f Dockerfile.demo .
+	@echo ""
+	@echo "Displaying the image layers (History):"
+	docker image history lug-layer-demo
+	@echo "[NOTE] 'Missing' just means it was pulled from an external source (the Internet)."
+	@echo "[Level 1] Bottom line (debian) is the root file system."
+	@echo "[Level 2] The other lines marked '2 weeks ago' are the runtime environment. These are dependencies for the enviroment established by the Python team."
+	@echo "[Level 3] At the top are our application layer commands. We pass it an install command, an environment variable, and a command to execute, python3."
+	docker rmi lug-layer-demo
+	rm -f Dockerfile.demo
