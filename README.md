@@ -1,6 +1,6 @@
 # Linux User Group Docker Workshop
 **Welcome to the Linux User Group Docker Workshop!**   
-Ask for help 
+*Please ask for help if you need it!*
 ## 1. Setup
 Before we get started you'll need to following tools installed on your system:  
 (*Windows users: Get the AMD64 download of the following tools unless you know otherwise.*)
@@ -9,6 +9,7 @@ Before we get started you'll need to following tools installed on your system:
 3. [Make](https://www.gnu.org/software/make/manual/make.html) - For running provided setup scripts
 
 Windows Terminal Commands:
+(*Note for WSL Users: Install Docker Desktop on Windows, but open your WSL terminal and use the Linux apt commands below to install git and make."*)
 ```
 winget install Docker.DockerDesktop Git.Git GnuWin32.Make
 ```
@@ -45,7 +46,7 @@ If you type the command `ls` you'll see the following:
 Radio
 README.md
 Sample
-Visualizer
+Website
 ```
 Briefly:
 - `Radio` is where we'll be managing our docker containers.
@@ -65,13 +66,13 @@ cd Radio
 If you type `ls` you'll see:
 - `Playlists` - This directory is where our radio station playlists will go. Each station will have it's own subfolder here for you to fill up with music.
 - `docker-compose.yml` - This is a **Docker Compose** file. For an analogy - A music note is to a musical composition what a Docker container is to a Docker Compose. This file structures all the necessary containers in order to achieve our goal.
-- `icecast.xml` - This is some boilerplate info to configure our icecast server. You can ignore this.
+- `icecast.xml` - This is some boilerplate info to configure our **Icecast** server. You can ignore this.
 - `Makefile` - This is a wrapper tool I've made to help you expedite the station setting up process. If you type and run `make` you'll get a list of commands you can run from it.
 
 Run the following commands:
 1. `make init` - This will pull some system info (Your OS and CPU architecture) to find the appropriate docker images and commands. This will be output and held in a `.env` file.
-2. `make up` - This will initialize and create the two docker containers: one for **liquidsoap** and ne for **Icecast**.
-3. `make station` - This will create a new radio station. You'll be prompted to enter a name for it. Running this will create a new folder under `Playlists`.
+2. `make station` - This will create a new radio station. You'll be prompted to enter a name for it. Running this will create a new folder under Playlists. For starting out try the name 'LUG'. 
+3. `make up` - This will initialize and create the two docker containers: one for **liquidsoap** and one for **Icecast**.
 
 After you run these three commands, find the playlist folder for the new station like so (we'll assume we created a station "LUG"):
 ```
@@ -81,13 +82,28 @@ This folder will be empty. I've provided some sample music for you to put in it 
 ```
 cp ../../../Sample/* .
 ```
-Forgive the ugly command! Since the sample directory is all the way back up at the root we just need to tell the copy command where to look to find all the music. Once you've run this, run the following:
+Forgive the ugly command! Since the sample directory is all the way back up at the root we just need to tell the copy command where to look to find all the music. (*Note: You may also open your file explorer and drag-and-drop the files by hand. As long as your new playlist folder has the mp3 files in it.*)
+
+Once you've done this, run the following:
 ```
 docker compose restart liquidsoap
 ```
-This will restart the **liquidsoap** container, so it can see the newly added music. Now open up `Website/radio.html` with a browser of your choice. You can also do this through the command line:
+This will restart the **liquidsoap** container, so it can see the newly added music. Now open up `Website/radio.html` with a browser of your choice. You can also do this through the command line:  
+**Mac:**
 ```
-
+open ../../../Website/radio.html
+```
+**Linux:**
+```
+xdg-open ../../../Website/radio.html
+```
+**Windows (PowerShell/Terminal):**
+```
+start ..\..\..\Website\radio.html
+```
+**Windows (WSL):**
+```
+explorer.exe ..\\..\\..\\Website\\radio.html
 ```
 
 --------------
@@ -102,23 +118,22 @@ Make sure your terminal is inside the DockerRadio/Radio folder (where the docker
 ```
 docker compose ps
 ```
-**What you see**: A table displaying your active containers (icecast and liquidsoap), their current status, and the ports they are exposing to your local machine (like 8000:8000).
+**What you see**: A table displaying your active containers (**Icecast** and **liquidsoap**), their current status, and the ports they are exposing to your local machine (like 8000:8000).
 #### View Live Logs
 ```
 docker compose logs -f liquidsoap
 ```
-**What you see**: A live stream of the terminal output from the liquidsoap container. You will see it successfully connecting to Icecast or reading your playlist files. (Press `Ctrl+C` to exit the live log stream).
+**What you see**: A live stream of the terminal output from the **liquidsoap** container. You will see it successfully connecting to **Icecast** or reading your playlist files. (Press `Ctrl+C` to exit the live log stream).
 
 #### Enter inside a container
 ```
 docker exec -it liquidsoap /bin/sh
 ```
-**What you see**: Your terminal will look different. You are now inside of the  liquidsoap Docker container Linux environment. Try running some commands in here like `ls /music`. Type `exit` to leave the container.
+**What you see**: Your terminal will look different. You are now inside of the  **liquidsoap** Docker container Linux environment. Try running some commands in here like `ls /music`. Type `exit` to leave the container.
 
 
 #### Restarting a Specific Service
 ```
 docker compose restart liquidsoap
 ```
-**What you see**: Docker will cleanly shut down and restart just the Liquidsoap container without touching the Icecast server. This command is particularly helpful because you can run this to update all the songs that liquidsoap can see.
-
+**What you see**: Docker will cleanly shut down and restart just the **liquidsoap** container without touching the **Icecast** server. This command is particularly helpful because you can run this to update all the songs that **liquidsoap** can see.
